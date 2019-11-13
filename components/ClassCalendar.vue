@@ -10,6 +10,7 @@
       @click:event="showEvent"
     ></v-calendar>
     <v-menu
+      v-if="selectedEvent"
       v-model="selectedOpen"
       :close-on-content-click="false"
       :activator="selectedElement"
@@ -34,9 +35,7 @@
           <span v-html="selectedEvent.details"></span>
         </v-card-text>
         <v-card-actions>
-          <v-btn text color="secondary" @click="selectedOpen = false">
-            Cancel
-          </v-btn>
+          <v-btn text color="secondary" @click="selectedOpen = false">Cancel</v-btn>
         </v-card-actions>
       </v-card>
     </v-menu>
