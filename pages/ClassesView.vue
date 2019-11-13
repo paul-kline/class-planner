@@ -1,13 +1,7 @@
 <template>
   <div>
     <ClassCalendar :events="selectedEvents"></ClassCalendar>
-    <v-text-field
-      v-model="search"
-      label="Search"
-      hide-details
-      outlined
-      append-icon="search"
-    ></v-text-field>
+    <v-text-field v-model="search" label="Search" hide-details outlined append-icon="search"></v-text-field>
     <v-data-table
       v-if="courses && headers"
       fixed-header
@@ -23,12 +17,11 @@
       show-expand
       :click:row="clickedRow"
       class="elevation-1"
-      ><template v-slot:item.course="{ item }">
+    >
+      <template v-slot:item.course="{ item }">
         <span v-html="item.courseHTML"></span>
       </template>
-      <template v-slot:item.coursename="{ item }">
-        {{ item.prettyCourseName }}
-      </template>
+      <template v-slot:item.coursename="{ item }">{{ item.prettyCourseName }}</template>
       <!-- 
       <template v-slot:item.instructor="{ item }">
         {{ instructorify(item) }}
@@ -36,13 +29,10 @@
       
       <template v-slot:item.days="{ item }">
         {{ days(item) }}
-      </template> -->
+      </template>-->
       <template v-slot:expanded-item="{ item, headers }">
         <td :colspan="headers.length">
-          <ClassComponent
-            :colspan="headers.length"
-            :course="item"
-          ></ClassComponent>
+          <ClassComponent :colspan="headers.length" :course="item"></ClassComponent>
         </td>
 
         <!-- <div>{{ item.description }}</div> -->
@@ -64,7 +54,7 @@ export default class ClassesView extends Vue {
   // @Prop() name!: string;
   courses: Course[] | null = null;
   search: string = "";
-  selected = [];
+  selected: any[] = [];
   expanded = [];
   get selectedEvents() {
     return this.selected.flatMap(x => x.events);
@@ -110,7 +100,7 @@ export default class ClassesView extends Vue {
     (window as any).courses = this.courses;
     console.log("classes", this.courses);
   }
-  clickedRow(r) {
+  clickedRow(r: any) {
     console.log("row clicked", r);
   }
 }

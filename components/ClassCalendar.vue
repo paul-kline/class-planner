@@ -59,6 +59,7 @@ export default class ClassCalendar extends Vue {
   selectedEvent: any = null;
   selectedElement: any = null;
   selectedOpen: boolean = false;
+  //@ts-ignore
   showEvent({ nativeEvent, event }) {
     console.log("boop");
     const open = () => {
@@ -80,7 +81,7 @@ export default class ClassCalendar extends Vue {
     //startinteval is <= 8.
     // const lastHour = this.endingHour();
 
-    return Math.max(8, this.endingHour() - this.startInterval);
+    return Math.max(8, this.endingHour() + 1 - this.startInterval);
   }
   endingHour() {
     return Math.max(...this.events.map(e => e.endDate).map(d => d.getHours()));

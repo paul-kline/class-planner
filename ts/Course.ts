@@ -3,7 +3,7 @@ import { toTitleCase } from "./Utils";
 const dayOrder = ["M", "T", "W", "R", "F", "S", "U", "N", "\\", "A"];
 export default class Course {
   constructor(public rawCourse: RawCourse) {}
-  _events: any[] | null;
+  _events: any[] | null = null;
   get events() {
     if (!this._events) {
       this._events = this.toEvents();
@@ -17,7 +17,7 @@ export default class Course {
     //     end: '2019-01-07 10:00',
     //   }
     const scheds = this.rawCourse.schedules;
-    const events = [];
+    const events: any = [];
     if (!scheds) return events;
     const shortername = this.course.match(/(\w+\d+)/);
     const eventName =
@@ -93,6 +93,7 @@ export default class Course {
 function withTime(date: Date, time: string) {
   // "8:50:00 PM".match(/(\d+):(\d+):(\d+)(\w+)/)
   const d = new Date(date);
+  //@ts-ignore
   const [, hourstr, minutestr, secondstr, pm] = time.match(
     /(\d+):(\d+):(\d+)\s*([A-Z]+)/
   );
