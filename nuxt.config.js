@@ -19,6 +19,9 @@ export default {
     ],
     link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }]
   },
+  serverMiddleware: [
+    { path: "/data", handler: "~/server-middleware/postData.js" }
+  ],
   /*
    ** Customize the progress-bar color
    */

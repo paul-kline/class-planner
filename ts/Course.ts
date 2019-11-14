@@ -42,10 +42,58 @@ export default class Course {
         event.endDate = withTime(d, end);
         event.end = toVuetifyCalString(event.endDate);
         event.name = eventName + "-" + sched.room;
+        event.originalCourse = this;
+        event.color = this.color;
         events.push(event);
       });
     });
     return events;
+  }
+  get color() {
+    const ms = ["CS", "MA"];
+    const codes = [
+      "AA",
+      "AC",
+      "AG",
+      "AR",
+      "BI",
+      "CA",
+      "CH",
+      "CO",
+      "CS",
+      "EC",
+      "ED",
+      "EN",
+      "FS",
+      "HI",
+      "JA",
+      "LD",
+      "LE",
+      "MA",
+      "MG",
+      "MK",
+      "MU",
+      "PE",
+      "PH",
+      "PR",
+      "PS",
+      "PY",
+      "SM",
+      "SP",
+      "SS",
+      "TH",
+      "WR"
+    ];
+    const colors = ["blue", "purple lighten-5"];
+    const me = this;
+    const i: number = ms.indexOf(ms.find(x => me.course.startsWith(x)) || "");
+    if (i >= 0) {
+      console.log("color", colors[i]);
+      return colors[i];
+    } else {
+      console.log("color", "orange", me.course);
+      return "deep-purple";
+    }
   }
   get days(): string {
     const x = this.rawCourse;
@@ -64,9 +112,17 @@ export default class Course {
   get course(): string {
     return this.rawCourse.course;
   }
+  get timeIntervals(): string[] {
+    const r = this.rawCourse.schedules;
+    if (!r) return [];
+    return r.map(s => s.starttime + "-" + s.endtime);
+  }
 
   get coursename(): string {
     return this.rawCourse.coursename;
+  }
+  get division(): string {
+    return this.rawCourse.division;
   }
   get description(): string {
     return this.rawCourse.description;
