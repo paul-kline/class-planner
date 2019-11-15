@@ -84,12 +84,33 @@ export default class Course {
       "TH",
       "WR"
     ];
-    const colors = ["blue", "purple lighten-5"];
+    const colors = [
+      "blue",
+      "purple lighten-1",
+      "red",
+      "pink",
+      "purple",
+      "deep-purple",
+      "indigo",
+      "light-blue",
+      "cyan",
+      "teal",
+      "green",
+      "light-green",
+      "amber",
+      "orange",
+      "deep-orange",
+      "brown",
+      "blue-grey",
+      "grey"
+    ];
     const me = this;
-    const i: number = ms.indexOf(ms.find(x => me.course.startsWith(x)) || "");
+    const i: number = codes.indexOf(
+      codes.find(x => me.course.startsWith(x)) || ""
+    );
     if (i >= 0) {
       console.log("color", colors[i]);
-      return colors[i];
+      return colors[i % colors.length];
     } else {
       console.log("color", "orange", me.course);
       return "deep-purple";

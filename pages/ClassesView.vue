@@ -7,7 +7,7 @@
       </v-expansion-panel>
     </v-expansion-panels>-->
     <v-card>
-      <ClassCalendar :events="selectedEvents"></ClassCalendar>
+      <ClassCalendar :events="selectedEvents" :includeRemove="true" v-on:remove="remove"></ClassCalendar>
     </v-card>
     <div class="d-flex flex-row align-baseline">
       <v-btn v-on:click="myclear()">Clear</v-btn>
@@ -92,10 +92,16 @@ export default class ClassesView extends Vue {
   terms: string[] = [];
   selectedTerm: string = "";
   dialog = false;
+  remove(c: Course) {
+    const index = this.selected.indexOf(c);
+    if (index > -1) {
+      this.selected.splice(index, 1);
+    }
+  }
   get creditHours(): number {
     const sels = this.selected as Course[];
     return sels.reduce(
-      (acc, c) => acc + (Number.parseInt(c.creditsString, 10) || 0),
+      (acc, c) => acc + (Number.parseFloat(c.creditsString) || 0),
       0
     );
   }
@@ -158,6 +164,21 @@ export default class ClassesView extends Vue {
     this.courses = this.populateClasses();
     (window as any).courses = this.courses;
     console.log("classes", this.courses);
+    this.setSelectedFromStorageIfAny();
+  }
+  setSelectedFromStorageIfAny() {
+    //seperate, but here.
+    const selected = localStorage.getItem("selected");
+    if (selected) {
+      const data = JSON.parse(selected);
+      if (data && data.length > 0) {
+        this.selected = data
+          .map((str: string) =>
+            this.courses ? this.courses.find(c => c.course == str) : null
+          )
+          .filter((x: any) => x != null);
+      }
+    }
   }
   populateClasses(): Course[] {
     const localTerms = localStorage.getItem("terms");
@@ -191,6 +212,10 @@ export default class ClassesView extends Vue {
   asCourse(x: any) {
     Object.setPrototypeOf(x, Course.prototype);
     return x;
+  }
+  @Watch("selected")
+  onSelectedChanged(val: Course[], oldVal: Course[]) {
+    localStorage.setItem("selected", JSON.stringify(val.map(c => c.course)));
   }
   @Watch("selectedTerm")
   onTermChanged(val: string, oldVal: string) {

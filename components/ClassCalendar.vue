@@ -28,7 +28,7 @@
           <!-- <v-btn icon>
             <v-icon>mdi-heart</v-icon>
           </v-btn>-->
-          <v-btn icon @click="selectedOpen = false">
+          <v-btn icon @click="close">
             <v-icon>mdi-close</v-icon>
           </v-btn>
         </v-toolbar>
@@ -54,7 +54,8 @@
           <span>Instructor: {{selectedEvent.originalCourse.instructor}}</span>
         </v-card-text>
         <v-card-actions>
-          <v-btn text color="secondary" @click="selectedOpen = false">Cancel</v-btn>
+          <v-btn text color="secondary" @click="close">Cancel</v-btn>
+          <v-btn v-if="includeRemove" text color="secondary" @click="remove">Remove</v-btn>
         </v-card-actions>
       </v-card>
     </v-menu>
@@ -68,19 +69,39 @@ import Course from "../ts/Course";
 @Component
 export default class ClassCalendar extends Vue {
   @Prop() events!: any[];
-
+  @Prop() includeRemove!: boolean;
+  originalColor: string = "";
+  remove() {
+    this.$emit("remove", this.events[0].originalCourse);
+    this.close();
+  }
   get startInterval() {
     return Math.min(
       8,
       ...this.events.map(e => e.startDate).map(d => d.getHours())
     );
   }
+  close() {
+    this.selectedOpen = false;
+    if (this.originalColor && this.changedEvents.length > 0) {
+      this.changedEvents.forEach(e => (e.color = this.originalColor));
+      this.originalColor = "";
+      this.changedEvents = [];
+    }
+  }
   selectedEvent: any = null;
   selectedElement: any = null;
   selectedOpen: boolean = false;
+  changedEvents: any[] = [];
   //@ts-ignore
   showEvent({ nativeEvent, event }) {
     console.log("boop");
+    this.originalColor = event.color;
+    const me = this;
+    this.changedEvents = event.originalCourse.events;
+    this.changedEvents.forEach((e: any) => {
+      e.color = "black";
+    });
     const open = () => {
       this.selectedEvent = event;
       (window as any).selectedEvent = this.selectedEvent;
@@ -108,6 +129,7 @@ export default class ClassCalendar extends Vue {
   }
   mounted() {
     console.log("class calendar mounted", this.events);
+
     //   this.course["Course Name"];
     //   this.course.Course
   }
