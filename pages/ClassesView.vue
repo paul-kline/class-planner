@@ -32,6 +32,7 @@
       :headers="headers"
       :items="courses"
       :single-select="false"
+      v-on:item-expanded="itemExpanded"
       item-key="course"
       show-select
       :single-expand="false"
@@ -93,6 +94,7 @@ export default class ClassesView extends Vue {
   selectedTerm: string = "";
   dialog = false;
   remove(c: Course) {
+    console.log("classesview remove called", c);
     const index = this.selected.indexOf(c);
     if (index > -1) {
       this.selected.splice(index, 1);
@@ -105,9 +107,9 @@ export default class ClassesView extends Vue {
       0
     );
   }
-  // term = "";
-  // middleware ({ store, redirect }) {
-
+  itemExpanded({ item, value }: any) {
+    console.log(item, value);
+  }
   get selectedEvents() {
     return this.selected.flatMap(x => x.events);
   }
@@ -171,13 +173,20 @@ export default class ClassesView extends Vue {
     const selected = localStorage.getItem("selected");
     if (selected) {
       const data = JSON.parse(selected);
+      console.log("selection saved was: ", data, "courses are", this.courses);
       if (data && data.length > 0) {
-        this.selected = data
-          .map((str: string) =>
-            this.courses ? this.courses.find(c => c.course == str) : null
-          )
-          .filter((x: any) => x != null);
+        const me = this;
+        setTimeout(() => {
+          me.selected = data
+            .map((str: string) =>
+              //@ts-ignore
+              this.courses ? me.courses.find(c => c.course == str) : null
+            )
+            .filter((x: any) => x != null);
+        }, 0);
       }
+    } else {
+      console.log("no selection was saved to storage.");
     }
   }
   populateClasses(): Course[] {

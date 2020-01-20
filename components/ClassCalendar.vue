@@ -2,8 +2,10 @@
   <div>
     <v-calendar
       v-if="events"
-      type="week"
       :first-interval="startInterval"
+      type="custom-daily"
+      :start="firstDate"
+      :end="lastDate"
       :weekdays="[1, 2, 3, 4, 5]"
       :events="events"
       :interval-count="numIntervals"
@@ -55,7 +57,12 @@
         </v-card-text>
         <v-card-actions>
           <v-btn text color="secondary" @click="close">Cancel</v-btn>
-          <v-btn v-if="includeRemove" text color="secondary" @click="remove">Remove</v-btn>
+          <v-btn
+            v-if="includeRemove"
+            text
+            color="secondary"
+            @click="remove(selectedEvent.originalCourse)"
+          >Remove</v-btn>
         </v-card-actions>
       </v-card>
     </v-menu>
@@ -64,29 +71,35 @@
 <script lang="ts">
 import { Vue, Component, Prop } from "vue-property-decorator";
 import { RawCourse } from "../ts/types";
-import { toTitleCase } from "../ts/Utils";
+import { toTitleCase, mkDay, strDate, dateFromString } from "../ts/Utils";
 import Course from "../ts/Course";
 @Component
 export default class ClassCalendar extends Vue {
   @Prop() events!: any[];
   @Prop() includeRemove!: boolean;
+  @Prop() minimizeSize!: boolean;
   originalColor: string = "";
-  remove() {
-    this.$emit("remove", this.events[0].originalCourse);
+  remove(course: Course) {
+    this.$emit("remove", course);
     this.close();
   }
+
   get startInterval() {
-    return Math.min(
-      8,
-      ...this.events.map(e => e.startDate).map(d => d.getHours())
+    return (
+      Math.min(
+        this.minimizeSize ? 24 : 8,
+        ...this.events.map(e => e.startDate).map(d => d.getHours())
+      ) + (this.minimizeSize ? -1 : 0)
     );
   }
   close() {
+    console.log("close called");
     this.selectedOpen = false;
     if (this.originalColor && this.changedEvents.length > 0) {
       this.changedEvents.forEach(e => (e.color = this.originalColor));
       this.originalColor = "";
       this.changedEvents = [];
+      this.selectedEvent = null;
     }
   }
   selectedEvent: any = null;
@@ -95,22 +108,26 @@ export default class ClassCalendar extends Vue {
   changedEvents: any[] = [];
   //@ts-ignore
   showEvent({ nativeEvent, event }) {
-    console.log("boop");
-    this.originalColor = event.color;
-    const me = this;
-    this.changedEvents = event.originalCourse.events;
-    this.changedEvents.forEach((e: any) => {
-      e.color = "black";
-    });
+    console.log("boo000000000p");
     const open = () => {
+      if (this.selectedEvent) this.close();
+      this.originalColor = event.color;
+      const me = this;
+      this.changedEvents = event.originalCourse.events;
+      this.changedEvents.forEach((e: any) => {
+        e.color = "black";
+      });
+
       this.selectedEvent = event;
       (window as any).selectedEvent = this.selectedEvent;
       this.selectedElement = nativeEvent.target;
+
       setTimeout(() => (this.selectedOpen = true), 10);
     };
 
     if (this.selectedOpen) {
-      this.selectedOpen = false;
+      // this.selectedOpen = false;
+      this.close();
       setTimeout(open, 10);
     } else {
       open();
@@ -118,11 +135,45 @@ export default class ClassCalendar extends Vue {
 
     nativeEvent.stopPropagation();
   }
+  get firstDate(): string {
+    let r: string = this.events
+      .map(e => e.start)
+      .reduce((acc, x) => (acc < x ? acc : x), this.mkMonday(false));
+    const asDate = dateFromString(r);
+    if (asDate.getDay() != 1) {
+      //it's not monday. make it monday!
+      r = strDate(mkDay("M", true, asDate));
+    }
+    console.log("first date:", r);
+    return r;
+  }
+  mkMonday(past: boolean = true): string {
+    const m = mkDay("M", past);
+    console.log("monday is:", m);
+    return strDate(m);
+  }
+
+  mkFriday(): string {
+    // return strDate(mkDay("F", false));
+    return strDate(mkDay("F", false, dateFromString(this.mkMonday())));
+  }
+  get lastDate(): string {
+    return strDate(mkDay("F", false, dateFromString(this.firstDate)));
+    // const friday = this.mkFriday();
+    // const r = this.events
+    //   .map(e => e.end)
+    //   .reduce((acc, x) => (acc > x ? acc : x), friday);
+    // console.log("last date", r);
+    // return r > friday ? friday : r;
+  }
   get numIntervals() {
     //startinteval is <= 8.
     // const lastHour = this.endingHour();
 
-    return Math.max(8, this.endingHour() + 1 - this.startInterval);
+    return Math.max(
+      this.minimizeSize ? 0 : 8,
+      this.endingHour() + 1 - this.startInterval
+    );
   }
   endingHour() {
     return Math.max(...this.events.map(e => e.endDate).map(d => d.getHours()));

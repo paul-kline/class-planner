@@ -1,5 +1,5 @@
 <template>
-  <v-card class="mb-2 mt-0" raised color="primary">
+  <v-card class="mb-2 mt-0 container" raised color="primary">
     <!-- <v-row justify="center" v-if="course.events.length > 0">
       <v-expansion-panels accordion>
         <v-expansion-panel>
@@ -9,7 +9,7 @@
         </v-expansion-panel>
       </v-expansion-panels>
     </v-row>-->
-    <ClassCalendar v-if="course.events.length > 0" :events="course.events"></ClassCalendar>
+    <ClassCalendar v-if="course.events.length > 0" :events="course.events" :minimizeSize="true"></ClassCalendar>
 
     <div v-else>No Schedule Set</div>
     <v-card-text>{{ course.description }}</v-card-text>

@@ -23,8 +23,8 @@ export default class Course {
     const eventName =
       shortername && shortername.length > 1 ? shortername[1] : this.course;
     scheds.forEach(sched => {
-      const start = sched.starttime;
-      const end = sched.endtime;
+      const start = sched.starttime == "TB/A" ? "12:00:00 AM" : sched.starttime;
+      const end = sched.endtime == "TB/A" ? "12:00:00 AM" : sched.endtime;
       const days =
         sched.days == "N\\A" || sched.days == "N/A"
           ? []
