@@ -13,4 +13,5 @@ jobs:
         FTP_USERNAME: paul@classplanner.pauliankline.com
         FTP_PASSWORD: ${{ secrets.classplannerPW }}
         LOCAL_DIR: dist 
+        ARGS: --verbose
         # --delete arg will delete files on the server if you've deleted them in git
