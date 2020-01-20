@@ -1,5 +1,9 @@
-- name: FTP Deploy
+name: FTP Deploy
   uses: SamKirkland/FTP-Deploy-Action@2.0.0
+  on : 
+    push:
+      branches:
+        - master
   with:
     # FTP server name (you may need to specify a port)
     ftp_server: ftp.pauliankline.com
@@ -8,12 +12,12 @@
     # FTP account password
     ftp_password:
     # Protocol used to deploy (ftp or sftp)
-    method: # optional, default is ftp
+   # method: # optional, default is ftp
     # The port used to connect to server
-    port: # optional, default is 21
+   # port: # optional, default is 21
     # The local folder to copy, defaults to root project folder
-    local_dir: # optional, default is 
+  #  local_dir: # optional, default is 
     # The remote folder to copy to, deafults to root FTP folder (I recommend you configure this on your server side instead of here)
-    remote_dir: # optional, default is 
+  #  remote_dir: # optional, default is 
     # Passes through options into lftp
-    ARGS: # optional, default is 
+  #  ARGS: # optional, default is 
