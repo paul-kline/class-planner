@@ -1,0 +1,15 @@
+on: push
+name: Publish Website
+jobs:
+  FTP-Deploy-Action:
+    name: FTP-Deploy-Action
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: FTP-Deploy-Action
+      uses: SamKirkland/FTP-Deploy-Action@2.0.0
+      env:
+        FTP_SERVER: ftp.pauliankline.com
+        FTP_USERNAME: paul@classplanner.pauliankline.com
+        FTP_PASSWORD: ${{ secrets.classplannerPW }}
+        # --delete arg will delete files on the server if you've deleted them in git
