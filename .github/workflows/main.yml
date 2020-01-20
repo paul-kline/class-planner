@@ -1,16 +1,17 @@
 name: FTP Deploy
   uses: SamKirkland/FTP-Deploy-Action@2.0.0
-  on : 
-    push:
-      branches:
-        - master
+runs-on: ubuntu-latest
+on: 
+  push:
+    branches:
+      - master
   with:
     # FTP server name (you may need to specify a port)
     ftp_server: ftp.pauliankline.com
     # FTP account username
     ftp_username: paul@classplanner.pauliankline.com
     # FTP account password
-    ftp_password:
+    ftp_password: ${{ secrets.classplannerPW }}
     # Protocol used to deploy (ftp or sftp)
    # method: # optional, default is ftp
     # The port used to connect to server
